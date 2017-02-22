@@ -8,7 +8,7 @@ command -v ecpg >/dev/null 2>&1 || { echo >&2 "abort. ecpg required."; exit 1; }
 SCHEMA_DIR="schema"
 GAT_DIR="GatewayUpdateScripts"
 TEL_DIR="TelematicsUpdateScripts"
-TEL_SCHEMAS=("action_request\|device_doctor\|health_event\|phonebook\|sds\|vehicle")
+TEL_SCHEMAS=("action_request\|device_doctor\|phonebook\|sds\|vehicle")
 DIR_ORDER=("SEQUENCE" "TABLE" "INDEX" "CONSTRAINT" "FK_CONSTRAINT" "DATA" "TRIGGER" "FUNCTION")
 
 CURR_BRANCH=$(hg branch)
@@ -60,10 +60,10 @@ if [ $ERROR_FLAG = false ]; then
 		GAT_HAS_FILES=false
 		for f in `printf -- '%s' "$FILES" | grep "/$d"`; do
 			if grep -q $TEL_SCHEMAS $f; then
-				TEL_SCRIPT="$TEL_SCRIPT\n\i/root/release/Devel/$f"
+				TEL_SCRIPT="$TEL_SCRIPT\n\i /root/release/Devel/$f"
 				TEL_HAS_FILES=true
 			else
-				GAT_SCRIPT="$GAT_SCRIPT\n\i/root/release/Devel/$f"
+				GAT_SCRIPT="$GAT_SCRIPT\n\i /root/release/Devel/$f"
 				GAT_HAS_FILES=true
 			fi
 		done;
