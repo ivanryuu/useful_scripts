@@ -8,8 +8,8 @@ command -v ecpg >/dev/null 2>&1 || { echo >&2 "abort. ecpg required."; exit 1; }
 SCHEMA_DIR="schema"
 GAT_DIR="GatewayUpdateScripts"
 TEL_DIR="TelematicsUpdateScripts"
-TEL_SCHEMAS=("action_request\|device_doctor\|phonebook\|sds\|vehicle")
-DIR_ORDER=("SEQUENCE" "TABLE" "INDEX" "CONSTRAINT" "FK_CONSTRAINT" "DATA" "TRIGGER" "FUNCTION")
+TEL_SCHEMAS=("action_procedure\|action_request\|device_doctor\|health_condition\|phonebook\|sds\|vehicle")
+DIR_ORDER=("SEQUENCE" "TABLE" "INDEX" "CONSTRAINT" "FK_CONSTRAINT" "DATA" "FUNCTION" "TRIGGER")
 
 CURR_BRANCH=$(hg branch)
 if [ ! $? -eq 0 ]; then
@@ -41,12 +41,10 @@ for f in $FILES; do
 	fi
 done;
 
-create_script() {
-	HEADER="SELECT support.script_ok_to_run(:release_script, :hgchangeset, :force);"
-	FOOTER="SELECT support.script_run(:release_script, :release_user, :hgchangeset, :hgbranch, :hguser, :hgsummary, :bugid);"
-	if [ $2 ]; then
+function create_script() {
+	if [ "$2" ]; then
 		SCRIPT_NAME=$1/$(date -d "today" +"%Y%m%d")_$CURR_BRANCH.sql
-		printf "$HEADER\n$2\n$FOOTER\n" > "$SCRIPT_NAME"
+		printf "$2" > "$SCRIPT_NAME"
 		echo "created $SCRIPT_NAME"
 	fi
 }
@@ -76,6 +74,7 @@ if [ $ERROR_FLAG = false ]; then
 		fi
 
 	done;
-	create_script $TEL_DIR $TEL_SCRIPT
-	create_script $GAT_DIR $GAT_SCRIPT
+
+	create_script "$TEL_DIR" "$TEL_SCRIPT"
+	create_script "$GAT_DIR" "$GAT_SCRIPT"
 fi
